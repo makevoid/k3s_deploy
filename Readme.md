@@ -36,11 +36,31 @@ Run `rake` to prepare and deploy
 
 you can choose to use the raw verison `rake KOMPOSE=y` (or `rake KOMPOSE=1`) which instead of `stack deploy` will use kompose (which actually also builds and automatically pushes the containers)
 
+The default command used internally is: `docker stack deploy --orchestrator=kubernetes`
 
+As simple as that!
 
 ### Run:
 
     rake
+
+
+Your deploy will start!
+
+
+### Notes
+
+It is recommended to close port 80 on the workers as k3s can (dynamically) assign it as a port
+
+### TODO
+
+- implement close port
+- close port 80
+- write troubleshooting guide
+
+### Troubleshooting
+
+- TODO: write readme about what to check when things go wrong
 
 ---
 
