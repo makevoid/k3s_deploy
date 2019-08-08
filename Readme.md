@@ -34,7 +34,8 @@ Run `rake` to prepare and deploy
 
 `rake` will run and check if k3s is already provisioned, and will perform a deployment using the `docker-compose.yml` for pods definition
 
-you can choose to use the raw verison `rake KOMPOSE=y` (or `rake KOMPOSE=1`) which instead of kompose will use `docker stack deploy --orchestrator=kubernetes`
+you can choose to use the raw verison `rake KOMPOSE=y` (or `rake KOMPOSE=1`) which instead of `stack deploy` will use kompose (which actually also builds and automatically pushes the containers)
+
 
 
 ### Run:
