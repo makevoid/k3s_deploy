@@ -16,9 +16,30 @@ class Kuber
       sleep 5
     end
 
-    check
+    check_nodes
+
+    check_pods
+
+    namespace = "nginx"
+
+    # TODO: remove - this is for demonstration purposes, it rebuilds the deployment from scratch every time - note: this command is a bit aggressive :D
+    exe :master, "kubectl delete daemonsets,replicasets,services,deployments,pods --all"
+
+    check_pods
 
     deploy
+
+    check_pods
+
+    sleep 2
+
+    check_pods
+
+    exe :master, "kubectl get deployments"
+
+    # too much info, disable by default
+    #
+    # exe :master, "kubectl describe deployment nginx"
 
   end
 
@@ -26,9 +47,16 @@ class Kuber
 
     exe :master, "cp /etc/rancher/k3s/k3s.yaml /root/.kube/config"
 
-    scp :master, :compose_yaml
+    scp :master, :kube_pods # (pods.yml)
 
-    exe :master, "docker stack deploy --orchestrator=kubernetes -c #{COMPOSE_YAML_FILE} #{STACK_NAME}", open3: true
+    exe :master, "kubectl  apply -f pods.yml"
+
+
+    # deploy via compose - TODO: at the moment it seems that k3s need to be configured - I'm getting Unauthorized (probably cert?) - TODO: try kompose as well
+
+    # scp :master, :compose_yaml
+    #
+    # exe :master, "docker stack deploy --orchestrator=kubernetes -c #{COMPOSE_YAML_FILE} #{STACK_NAME}", open3: true
 
   end
 
@@ -57,9 +85,12 @@ class Kuber
     install_docker
   end
 
-  def check
+  def check_pods
+    nodes = exe :master, "kubectl get pods", open3: true
+  end
+
+  def check_nodes
     nodes = exe :master, "kubectl get nodes", open3: true
-    puts nodes
   end
 
   def uninstall!
