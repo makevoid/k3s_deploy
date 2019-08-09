@@ -32,8 +32,16 @@ module SSHUtils
 
   SSHCmd = -> (ip, cmd, open3) {
     open3 = !!(open3 == :open3)
-    ssh_exe "ssh  root@#{ip} \"#{cmd}\"", open3: open3
+    ssh_exe "ssh root@#{ip} \"#{cmd}\"", open3: open3
   }
+
+  SCPCmd = -> (ip, file, open3) {
+    open3 = !!(open3 == :open3)
+    raise "File name can't contain spaces" if file.match /\s/
+    ssh_exe "scp #{file} root@#{ip}:~/#{file}", open3: open3
+  }
+
+  # add known hosts
 
   AddSSHKnownHost = -> (ip) {
     known_hosts = File.expand_path "~/.ssh/known_hosts"

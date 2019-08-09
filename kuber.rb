@@ -9,7 +9,7 @@ class Kuber
   def setup!
     # uninstall!
 
-    first_run = ENV["FIRST_RUN"] == "1" || false
+    first_run = ENV["FIRST_RUN"] == "1" || ENV["INSTALL"] == "1" || false
     if first_run
       prereqs!
       install!
@@ -23,8 +23,13 @@ class Kuber
   end
 
   def deploy
-    exe :master, "#{curl_k3s} | sh -", open3: true
-    
+
+    exe :master, "cp /etc/rancher/k3s/k3s.yaml /root/.kube/config"
+
+    scp :master, :compose_yaml
+
+    exe :master, "docker stack deploy --orchestrator=kubernetes -c #{COMPOSE_YAML_FILE} #{STACK_NAME}", open3: true
+
   end
 
   # main actions and helpers
@@ -36,23 +41,20 @@ class Kuber
   end
 
   def install!
-    exe :master, "#{curl_k3s} | sh -", open3: true
-    # exe_all_user "#{curl_k3s} | sh -"
+    # install k3s
 
-    token = exe :master, "cat /var/lib/rancher/k3s/server/node-token", open3: true
+    exe :master, "#{curl_k3s} | sh -", open3: true
 
     master_host = "https://#{IP_MASTER}:6443"
-    k3s_install_env = "K3S_TOKEN=#{token} K3S_URL=#{master_host}"
+    token = exe :master, "cat /var/lib/rancher/k3s/server/node-token", open3: true
+    k3s_install_env = "K3S_URL=#{master_host} K3S_TOKEN=#{token}"
 
     exe :worker1, "#{curl_k3s} | #{k3s_install_env} sh -"
     exe :worker2, "#{curl_k3s} | #{k3s_install_env} sh -"
 
-    # agent_cmd = "k3s agent --server #{master_host} --token #{token}"
-    #
-    # # exe :worker1, "service k3s stop", open3: true
-    # # exe :worker2, "service k3s stop", open3: true
-    # exe :worker1, agent_cmd
-    # exe :worker2, agent_cmd
+    # install docker to be able to connect to the master and deploy directly from there
+
+    install_docker
   end
 
   def check
@@ -64,12 +66,38 @@ class Kuber
     exe_all_user "/usr/local/bin/k3s-uninstall.sh"
   end
 
+  # install docker
+
+  def install_docker
+    exe :master, "apt -y update"
+    exe :master, "apt -y install apt-transport-https ca-certificates gnupg2 software-properties-common"
+    exe :master, "curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -"
+    exe :master, "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/debian #{DEBIAN_RELEASE} stable'"
+    exe :master, "apt -y update"
+    exe :master, "apt -y install docker-ce docker-ce-cli containerd.io"
+  end
+
   # utils
 
   def exe(ip, cmd, open3: false)
     ip = select_ip ip
     open3 = open3 && :open3
     SSHUtils::SSHCmd.(ip, cmd, open3)
+  end
+
+  def scp(ip, file, open3: false)
+    ip = select_ip ip
+    open3 = open3 && :open3
+    file = case file
+    when :compose_yaml then COMPOSE_YAML_FILE
+    when :readme_md    then "Readme.md"
+    when :kube_stack   then "stack.yml" # kube pods/services file
+    when :services     then "services.yml"
+    when :kube_pods    then "pods.yml"
+    else
+      raise "File not found - please pass :compose as file"
+    end
+    SSHUtils::SCPCmd.(ip, file, open3)
   end
 
   def select_ip(ip)

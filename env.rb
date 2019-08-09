@@ -11,7 +11,10 @@ module Config
     IP_WORKER2,
   ]
 
+  STACK_NAME = "default" # default stack name
+  COMPOSE_YAML_FILE = "docker-compose.yml" # default
   USER = "admin" # debian
+  DEBIAN_RELEASE = "stretch" # (docker) debian release
 end
 
 include Config
