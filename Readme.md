@@ -52,6 +52,8 @@ Your deploy will start!
 
 It is recommended to close port 80 on the workers as k3s can (dynamically) assign it as a port
 
+Use dockerhub (using a private docker registry needs extra setup infos)
+
 ### TODO
 
 - implement close port
@@ -60,7 +62,9 @@ It is recommended to close port 80 on the workers as k3s can (dynamically) assig
 
 ### Troubleshooting
 
+- TODO: write difference between kompose and stack deploy
 - TODO: write readme about what to check when things go wrong
+
 
 ---
 
