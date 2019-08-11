@@ -47,7 +47,11 @@ class Kuber
 
     exe :master, "kubectl  apply -f pods.yml"
 
-
+    # TODO: resume development here
+    
+    # makevoid fork - support for compose files and kompose compiled and modified kubernetes pod/service/deployment yml files 
+    # applied blockchain fork - support for private repositories
+      
     # deploy via compose - TODO: at the moment it seems that k3s need to be configured - I'm getting Unauthorized (probably cert?) - TODO: try kompose as well
 
     # scp :master, :compose_yaml
@@ -65,22 +69,31 @@ class Kuber
     exe_all_user "mkdir -p /root/.ssh"
     exe_all_user "cp /home/#{USER}/.ssh/authorized_keys /root/.ssh/authorized_keys"
   end
+  
+  # main method, install_k3s!
 
   def install!
-    # install k3s
-
+    puts "installing K3s"
+    install_k3s
+  end
+  
+  def install_k3s
+    install_k3s_master
+    install_k3s_workers
+    install_docker
+  end
+  
+  def install_k3s_master
     exe :master, "#{curl_k3s} | sh -", open3: true
-
+  end
+  
+  def install_k3s_workers
     master_host = "https://#{IP_MASTER}:6443"
     token = exe :master, "cat /var/lib/rancher/k3s/server/node-token", open3: true
     k3s_install_env = "K3S_URL=#{master_host} K3S_TOKEN=#{token}"
 
     exe :worker1, "#{curl_k3s} | #{k3s_install_env} sh -"
     exe :worker2, "#{curl_k3s} | #{k3s_install_env} sh -"
-
-    # install docker to be able to connect to the master and deploy directly from there
-
-    install_docker
   end
 
   def check_pods
@@ -95,9 +108,18 @@ class Kuber
     exe_all_user "/usr/local/bin/k3s-uninstall.sh"
   end
 
-  # install docker
+  # post install - post install procedure (gets executed after K3S is installed)
+  
+  def post_install
+    install_docker
+    # ...
+  end
+  
+  # install docker - #TODO: move in lib/docker.rb - module VMProvisioning::Docker::Install
 
   def install_docker
+     # install docker to be able to connect to the master and deploy directly from there
+
     exe :master, "apt -y update"
     exe :master, "apt -y install apt-transport-https ca-certificates gnupg2 software-properties-common"
     exe :master, "curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -"
@@ -106,7 +128,7 @@ class Kuber
     exe :master, "apt -y install docker-ce docker-ce-cli containerd.io"
   end
 
-  # utils
+  # utils - #TODO: move in lib/utils.rb - module Utils
 
   def exe(ip, cmd, open3: false)
     ip = select_ip ip
