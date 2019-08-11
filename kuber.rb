@@ -37,10 +37,6 @@ class Kuber
 
     exe :master, "kubectl get deployments"
 
-    # too much info, disable by default
-    #
-    # exe :master, "kubectl describe deployment nginx"
-
   end
 
   def deploy
@@ -60,6 +56,8 @@ class Kuber
 
   end
 
+  # TODO: refactor into multiple different files
+  
   # main actions and helpers
 
   def prereqs!
