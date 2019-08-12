@@ -54,6 +54,13 @@ It is recommended to close port 80 on the workers as k3s can (dynamically) assig
 
 Use dockerhub (using a private docker registry needs extra setup infos)
 
+### Firewall Ports 
+
+[provisioner/infra](https://github.com/appliedblockchain/provisioner/infra) will set up those for you, but if you're configuring it from scratch, you can open the following ports: 
+
+- Master: 6443 TCP
+- Workers: 8472 UDP
+
 ### TODO
 
 - implement close port
