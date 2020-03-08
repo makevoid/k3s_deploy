@@ -5,7 +5,7 @@ Setup a K3S cluster with one master and two workers on 3 VMs
 ---
 
 
- My recommendation is to follow this Readme to set up a 3 VMs highly available Kube (using k3s with the default setup) cluster on AWS Lightsail using three VMs and a load balancer
+ By running this configurator you will have an highly available Kube cluster on AWS Lightsail using three VMs and a load balancer.  K3s is set up with the default configurations but you can fork this code and customize in case you need to.
 
 For kube CNI, in this project we follow the k3s recommendation to use the default Traefik which exposes one port for our ingress service (nginx)
 
@@ -54,15 +54,16 @@ It is recommended to close port 80 on the workers as k3s can (dynamically) assig
 
 Use dockerhub (using a private docker registry needs extra setup infos)
 
-### Firewall Ports 
+### Firewall Ports
 
-[provisioner/infra](https://github.com/appliedblockchain/provisioner/infra) will set up those for you, but if you're configuring it from scratch, you can open the following ports: 
+[provisioner/infra](https://github.com/appliedblockchain/provisioner/infra) will set up those for you, but if you're configuring it from scratch, you can open the following ports:
 
 - Master: 6443 TCP
 - Workers: 8472 UDP
 
 ### TODO
 
+- implement dnsimple auto-domain regisering
 - implement close port
 - close port 80
 - write troubleshooting guide
@@ -76,6 +77,8 @@ Use dockerhub (using a private docker registry needs extra setup infos)
 ---
 
 ### Notes / Tags
+
+    This project uses Ruby (v1.9+) without needing any gem dependency
 
     #kubernetes, #k3s, #ruby, #ops, #devops, #compose, #docker, #kompose
 

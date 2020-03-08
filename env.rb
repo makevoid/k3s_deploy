@@ -1,6 +1,5 @@
 require_relative 'lib/utils'
 
-
 module Config
   IP_MASTER  = "52.212.144.80"
   IP_WORKER1 = "52.211.145.247"
