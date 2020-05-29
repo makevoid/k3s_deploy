@@ -46,18 +46,6 @@ class Kuber
     scp :master, :kube_pods # (pods.yml)
 
     exe :master, "kubectl  apply -f pods.yml"
-
-    # TODO: resume development here
-
-    # makevoid fork - support for compose files and kompose compiled and modified kubernetes pod/service/deployment yml files
-    # applied blockchain fork - support for private repositories
-
-    # deploy via compose - TODO: at the moment it seems that k3s need to be configured - I'm getting Unauthorized (probably cert?) - TODO: try kompose as well
-
-    # scp :master, :compose_yaml
-    #
-    # exe :master, "docker stack deploy --orchestrator=kubernetes -c #{COMPOSE_YAML_FILE} #{STACK_NAME}", open3: true
-
   end
 
   # TODO: refactor into multiple different files
