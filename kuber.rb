@@ -3,7 +3,7 @@ require_relative 'env'
 class Kuber
 
   def initialize
-    # ...
+    puts "new k3s setup:"
   end
 
   def setup!
