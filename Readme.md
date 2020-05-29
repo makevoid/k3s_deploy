@@ -25,7 +25,7 @@ K3S uses https://github.com/appliedblockchain/provisioner#k3s / provisioner/infr
 
 #### Run Provisioning
 
-    source env.sh && rake CMD=provision
+    rake CMD=provision
 
 
 ### K3S Deploy

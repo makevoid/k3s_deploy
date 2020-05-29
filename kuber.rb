@@ -9,8 +9,8 @@ class Kuber
   def setup!
     # uninstall!
 
-    first_run = ENV["FIRST_RUN"] == "1" || ENV["INSTALL"] == "1" || false
-    if first_run
+    perform_setup = ENV["SETUP"] == "1" || ENV["INSTALL"] == "1" || false
+    if perform_setup
       prereqs!
       install!
       sleep 5
@@ -72,16 +72,17 @@ class Kuber
   end
 
   def install_k3s_master
-    exe :master, "#{curl_k3s} | sh -", open3: true
+    k3s_install_env_master = "INSTALL_K3S_EXEC=\"--tls-san #{IP_MASTER}\""
+    exe :master, "#{curl_k3s} | #{k3s_install_env_master} sh -", open3: true
   end
 
   def install_k3s_workers
     master_host = "https://#{IP_MASTER}:6443"
     token = exe :master, "cat /var/lib/rancher/k3s/server/node-token", open3: true
-    k3s_install_env = "K3S_URL=#{master_host} K3S_TOKEN=#{token}"
+    k3s_install_env_workers = "K3S_URL=#{master_host} K3S_TOKEN=#{token}"
 
-    exe :worker1, "#{curl_k3s} | #{k3s_install_env} sh -"
-    exe :worker2, "#{curl_k3s} | #{k3s_install_env} sh -"
+    exe :worker1, "#{curl_k3s} | #{k3s_install_env_workers} sh -"
+    exe :worker2, "#{curl_k3s} | #{k3s_install_env_workers} sh -"
   end
 
   def check_pods
