@@ -48,10 +48,10 @@ class Kuber
     exe :master, "kubectl  apply -f pods.yml"
 
     # TODO: resume development here
-    
-    # makevoid fork - support for compose files and kompose compiled and modified kubernetes pod/service/deployment yml files 
+
+    # makevoid fork - support for compose files and kompose compiled and modified kubernetes pod/service/deployment yml files
     # applied blockchain fork - support for private repositories
-      
+
     # deploy via compose - TODO: at the moment it seems that k3s need to be configured - I'm getting Unauthorized (probably cert?) - TODO: try kompose as well
 
     # scp :master, :compose_yaml
@@ -61,7 +61,7 @@ class Kuber
   end
 
   # TODO: refactor into multiple different files
-  
+
   # main actions and helpers
 
   def prereqs!
@@ -69,24 +69,24 @@ class Kuber
     exe_all_user "mkdir -p /root/.ssh"
     exe_all_user "cp /home/#{USER}/.ssh/authorized_keys /root/.ssh/authorized_keys"
   end
-  
+
   # main method, install_k3s!
 
   def install!
     puts "installing K3s"
     install_k3s
   end
-  
+
   def install_k3s
     install_k3s_master
     install_k3s_workers
     install_docker
   end
-  
+
   def install_k3s_master
     exe :master, "#{curl_k3s} | sh -", open3: true
   end
-  
+
   def install_k3s_workers
     master_host = "https://#{IP_MASTER}:6443"
     token = exe :master, "cat /var/lib/rancher/k3s/server/node-token", open3: true
@@ -109,12 +109,12 @@ class Kuber
   end
 
   # post install - post install procedure (gets executed after K3S is installed)
-  
+
   def post_install
     install_docker
     # ...
   end
-  
+
   # install docker - #TODO: move in lib/docker.rb - module VMProvisioning::Docker::Install
 
   def install_docker
